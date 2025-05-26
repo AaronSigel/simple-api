@@ -1,0 +1,15 @@
+[Unit]
+Description=Simple Spring Boot API
+After=network.target
+
+[Service]
+User=www-data
+WorkingDirectory=/var/www/app
+ExecStart=/usr/bin/java -jar /var/www/app/app.jar --server.port=5000
+SuccessExitStatus=143
+Restart=on-failure
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target
+EOF

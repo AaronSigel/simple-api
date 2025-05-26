@@ -217,3 +217,61 @@ curl -v http://127.0.0.1:8080/health
 * Не забывайте reload nginx и перезапускать VM после изменения Port Forwarding.
 * Все изменения firewall/iptables выполняйте осознанно.
 * Для локальной сети (host-only) используйте отдельный сетевой интерфейс, при необходимости добавьте статический маршрут.
+
+## 16. Команды для демонстрации
+
+```bash
+# ---------- 0. Базовый URL ----------
+export BASE=http://127.0.0.1:8081
+
+# ---------- 1. HealthCheck ----------
+curl -s $BASE/health && echo            # → OK
+
+# ---------- 2. Users ----------
+## 2.1 Создать двух пользователей
+curl -s -X POST $BASE/api/users \
+     -H 'Content-Type: application/json' \
+     -d '{"name":"Alice","email":"alice@example.com"}'
+
+curl -s -X POST $BASE/api/users \
+     -H 'Content-Type: application/json' \
+     -d '{"name":"Bob","email":"bob@example.com"}'
+
+## 2.2 Список всех
+curl -s $BASE/api/users | jq
+
+## 2.3 Получить по ID (пример: 1)
+curl -s $BASE/api/users/1 | jq
+
+## 2.4 Обновить пользователя 2
+curl -s -X PUT $BASE/api/users/2 \
+     -H 'Content-Type: application/json' \
+     -d '{"name":"Robert","email":"robert@example.com"}' | jq
+
+## 2.5 Удалить пользователя 1
+curl -s -X DELETE $BASE/api/users/1 -w '\nStatus: %{http_code}\n'
+
+# ---------- 3. Projects ----------
+## 3.1 Создать два проекта
+curl -s -X POST $BASE/api/projects \
+     -H 'Content-Type: application/json' \
+     -d '{"title":"Demo","description":"Первый проект"}'
+
+curl -s -X POST $BASE/api/projects \
+     -H 'Content-Type: application/json' \
+     -d '{"title":"PoC","description":"Второй проект"}'
+
+## 3.2 Список проектов
+curl -s $BASE/api/projects | jq
+
+## 3.3 Подробнее о проекте 2
+curl -s $BASE/api/projects/2 | jq
+
+## 3.4 Изменить проект 1
+curl -s -X PUT $BASE/api/projects/1 \
+     -H 'Content-Type: application/json' \
+     -d '{"title":"Demo-updated","description":"Обновлён"}' | jq
+
+## 3.5 Удалить проект 2
+curl -s -X DELETE $BASE/api/projects/2 -w '\nStatus: %{http_code}\n'
+```
